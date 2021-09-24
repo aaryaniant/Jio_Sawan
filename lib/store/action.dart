@@ -1,6 +1,7 @@
 import 'dart:convert';
+
 import 'package:audio_service/audio_service.dart';
-import 'package:music_app/Screens/audioHandler.dart';
+// import 'package:music_app/Screens/audioHandler.dart';
 import 'package:music_app/models/musicDailyModel/daily_top_model.dart';
 import 'package:music_app/models/musicModel/weekly_top_model.dart';
 import 'package:music_app/models/songInfoModel.dart';
@@ -14,10 +15,10 @@ import 'appState.dart';
 
 
 //fetch Song By id
-ThunkAction<AppState> fetchSongId(context) {
+ThunkAction<AppState> fetchSongId(context,songId) {
   print(['fetchSongId api running ']); 
   return (Store<AppState> store) async {
-    var url = Uri.parse("https://saavn.me/song?id=f_MsPb4c");
+    var url = Uri.parse("https://saavn.me/song?id=$songId");
     var response = await http.get(url);    
     if(response.statusCode==200){
       var res = jsonDecode(response.body);  
@@ -41,7 +42,20 @@ ThunkAction<AppState> fetchWeeklyTop(context) {
       var oldRes = response.body.replaceAll('"list":', '"data":');
       var res = jsonDecode(oldRes);
       // print(["fetchWeeklyTopDecoded", res]);    
-      store.dispatch(WeeklyTopModel.fromJson(res));     
+      List data = res['data'];
+      List playlistSongsUrls = [];
+      data.map((e) async {
+       String? downloadUrl = await fetchPlaylistSongDownloadUrl(context,e['id']);
+       if(!playlistSongsUrls.contains(downloadUrl)){
+         playlistSongsUrls.add(downloadUrl);
+       }
+       print(["downloadUrl",downloadUrl]);
+      }).toList();
+      Future.delayed(Duration(milliseconds: 3000),(){
+  store.dispatch(WeeklyTopModel.fromJson(res));
+  store.dispatch(PlaylistSongsUrls(playlistSongsUrls));    
+      });
+     
     }else{
       print(response.statusCode);
     }
@@ -73,29 +87,28 @@ ThunkAction<AppState> fetchDailyTop(context) {
 
 
 
-//fetch movies genere
-// ThunkAction<AppState> fetchGenere(context) {
-//   print(['fetchGenere api running ']); 
-//   return (Store<AppState> store) async {
-//     store.dispatch(Loader(showLoader: true));
 
-//     var url = Uri.parse("https://data-imdb1.p.rapidapi.com/genres/");
-//     var response = await http.get(url, headers: headers);
-//     // print(response.body);
-//     if (response.statusCode == 200) {
-//       var res = jsonDecode(response.body);
-//       List gen = res['Genres'];
-//       // print(["action generedata res", res]);
-//       List _newGen = [];
-//       gen.map((element) async {
-//         String? imgGen = await searchImage(element['genre']);
-//         Map map = {"genre": "${element['genre']}", "imageUrl": "$imgGen"};
-//         if (!_newGen.contains(map)) {
-//           _newGen.add(jsonEncode(map));
-//         }
-//         store.dispatch(DiscoverApiModel.fromJson({"Genres": _newGen}));
-//       }).toList();//    
-//       store.dispatch(Loader(showLoader: false));
-//     }
-//   };
-// }
+
+
+//class playlistSongsUrls
+class PlaylistSongsUrls {
+  List?playlistSongsUrls;
+  PlaylistSongsUrls(this.playlistSongsUrls);
+
+}
+
+//fetch Song By id and store to list
+Future<String?> fetchPlaylistSongDownloadUrl(context,songId) async {
+  print(['fetchSongByIdStore api running ']); 
+ 
+    var url = Uri.parse("https://saavn.me/song?id=$songId");
+    var response = await http.get(url);    
+    if(response.statusCode==200){
+      var res = jsonDecode(response.body);  
+      print(["fetchSongByIdStore",response.body]);
+     return res['download_links'][1];
+
+    }    
+    
+
+}

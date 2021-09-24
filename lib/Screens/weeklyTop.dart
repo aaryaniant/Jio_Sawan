@@ -38,7 +38,7 @@ class _WeeklyTopState extends State<WeeklyTop> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: 
-           store.state.weeklyTopModel!.data!.isEmpty ? 
+      store.state.weeklyTopModel!.data == null ? 
                   Container(
                           height: MediaQuery.of(context).size.height/2,
                           child: Center(

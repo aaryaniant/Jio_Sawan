@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:music_app/Screens/songInfo.dart';
 import 'package:music_app/models/musicDailyModel/datum.dart';
 import '/store/action.dart' as action;
 import 'package:music_app/main.dart';
@@ -81,7 +82,9 @@ class _DailyTopState extends State<DailyTop> {
                       itemBuilder: (BuildContext context, int index){
                       Datum item =  store.state.dailyTopModel!.data![index];
                       return ElevatedButton(
-                         onPressed: (){},
+                         onPressed: (){
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>SongInfo(songInfo:item)));
+                         },
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all(Colors.transparent),
                     overlayColor: MaterialStateProperty.all(Colors.blueGrey[100]),

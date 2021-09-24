@@ -7,22 +7,15 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'package:music_app/Screens/homePage.dart';
 import 'package:redux/redux.dart';
 
-import 'Screens/audioHandler.dart';
-
+import 'packages/auidoPlayer/services/service_locator.dart';
+import 'splashScreen/splashScreen.dart';
 // Redux
 final store = Store<AppState>(appReducer,
     middleware: [thunkMiddleware], initialState: AppState.initial());
 late AudioHandler audioHandler;
 
 Future<void> main() async {
-  //  audioHandler = await AudioService.init(
-  //   builder: () => AudioPlayerHandler(),
-  //   config: const AudioServiceConfig(
-  //     androidNotificationChannelId: 'com.ryanheise.myapp.channel.audio',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true,
-  //   ),
-  // );
+  await setupServiceLocator();
   runApp(StoreProvider(store: store, child: MyApp()));
 }
 
@@ -37,7 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(      
         primarySwatch: Colors.blue,
       ),
-      home: HomePageScreen(),
+      home: SplashScreen(),
     );
   }
 }

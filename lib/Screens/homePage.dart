@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:music_app/Screens/songInfo.dart';
 import 'package:music_app/Screens/weeklyTop.dart';
+import 'package:music_app/packages/auidoPlayer/player.dart';
 import 'package:music_app/store/appState.dart';
 import '../main.dart';
 import '/store/action.dart' as action;
@@ -73,6 +74,29 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   ),
                 ),
                ),          
+               ElevatedButton(
+                         onPressed: (){ 
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Player()));                          
+                         },
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all(Colors.transparent),
+                    overlayColor: MaterialStateProperty.all(Colors.blueGrey[100]),
+                    shadowColor: MaterialStateProperty.all(Colors.transparent),
+                    padding: MaterialStateProperty.all(EdgeInsets.all(0)),
+                  ),
+                        child: Container(                
+                  padding: EdgeInsets.only(right: 5,left: 10),
+                  width: MediaQuery.of(context).size.width,
+                  height: 70,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Daily",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white),),
+                      Icon(Icons.chevron_right,size: 30,color: Colors.white),
+                    ],
+                  ),
+                ),
+               ),         
             ]
           ),
         ),
