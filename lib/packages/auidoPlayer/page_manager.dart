@@ -11,6 +11,8 @@ import 'notifiers/repeat_button_notifier.dart';
 class PageManager {
   // Listeners: Updates going to the UI
   final currentSongTitleNotifier = ValueNotifier<String>('');
+   final currentSongMediaIdNotifier = ValueNotifier<String>('');
+  final currentSongImageNotifier = ValueNotifier<String>('');
   final playlistNotifier = ValueNotifier<List<String>>([]);
   final progressNotifier = ProgressNotifier();
   final repeatButtonNotifier = RepeatButtonNotifier();
@@ -56,6 +58,7 @@ String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
       if (playlist.isEmpty) {
         playlistNotifier.value = [];
         currentSongTitleNotifier.value = '';
+
       } else {
         final newList = playlist.map((item) => item.title).toList();
         playlistNotifier.value = newList;
@@ -117,10 +120,14 @@ String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
 
   void _listenToChangesInSong() {
     _audioHandler.mediaItem.listen((mediaItem) {
-      currentSongTitleNotifier.value = mediaItem?.title ?? '';
+      currentSongTitleNotifier.value = mediaItem?.title.toString() ?? '';
+      currentSongImageNotifier.value = mediaItem?.artUri.toString() ?? '';
+     
       _updateSkipButtons();
     });
   }
+
+  
 
   void _updateSkipButtons() {
     final mediaItem = _audioHandler.mediaItem.value;

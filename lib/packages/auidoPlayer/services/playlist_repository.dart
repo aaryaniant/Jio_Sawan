@@ -5,6 +5,7 @@ import '../../../main.dart';
 abstract class PlaylistRepository {
   Future<List<Map<String, String>>> fetchInitialPlaylist();
   Future<Map<String, String>> fetchAnotherSong();
+    Future<Map<String, String>> fetchSelectedSong(title);
 }
 
 class DemoPlaylist extends PlaylistRepository {
@@ -28,6 +29,12 @@ class DemoPlaylist extends PlaylistRepository {
     return _nextSong();
   }
 
+    @override
+  Future<Map<String, String>> fetchSelectedSong(title) async {
+    return _playSelectedSong(title);
+  }
+
+
   var _songIndex = 0;
   static const _maxSongNumber = 16;
 
@@ -43,5 +50,31 @@ class DemoPlaylist extends PlaylistRepository {
       'url':
          store.state.playlistSongsUrls![_songIndex].toString(),
     };
+  }
+
+  //selectedSong
+    Map<String, String> _playSelectedSong(title) {
+    _songIndex = (_songIndex ) + 1;
+    // _songIndex = (_songIndex % _maxSongNumber) + 1;
+
+    Datum item = store.state.weeklyTopModel!.data![_songIndex];
+    if(title ==item.title){
+    return {
+      'id': _songIndex.toString().padLeft(3, '0'),
+      'title': '${item.title}',
+      'album': '${item.shershaah}',
+      'url':
+         store.state.playlistSongsUrls![_songIndex].toString(),
+    };
+    }
+    else{
+      return {
+      // 'id': _songIndex.toString().padLeft(3, '0'),
+      // 'title': '${item.title}',
+      // 'album': '${item.shershaah}',
+      // 'url':
+      //    store.state.playlistSongsUrls![_songIndex].toString(),
+    };
+    }
   }
 }

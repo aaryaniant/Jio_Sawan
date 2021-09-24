@@ -1,13 +1,15 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:music_app/main.dart';
 import 'package:music_app/packages/auidoPlayer/page_manager.dart';
+import 'package:music_app/packages/auidoPlayer/services/playlist_repository.dart';
 import 'package:music_app/packages/auidoPlayer/services/service_locator.dart';
 
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
-
+import 'package:html_unescape/html_unescape.dart' ;
 class Player extends StatefulWidget {
   @override
   _PlayerState createState() => _PlayerState();
@@ -28,21 +30,23 @@ class _PlayerState extends State<Player> {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      appBar: AppBar(),
-        body: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              CurrentSongTitle(),
-              Playlist(),
-              // AddRemoveSongButtons(),
-              AudioProgressBar(),
-              AudioControlButtons(),
-            ],
+    return  SafeArea(
+      child: Scaffold(
+        // appBar: AppBar(),
+          body: Container(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                CurrentSongTitle(),
+                Playlist(),
+                // AddRemoveSongButtons(),
+                AudioProgressBar(),
+                AudioControlButtons(),
+              ],
+            ),
           ),
         ),
-      );
+    );
  
   }
 }
@@ -53,11 +57,11 @@ class CurrentSongTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     final pageManager = getIt<PageManager>();
     return ValueListenableBuilder<String>(
-      valueListenable: pageManager.currentSongTitleNotifier,
-      builder: (_, title, __) {
+      valueListenable: pageManager.currentSongImageNotifier,
+      builder: (_, image, __) {
         return Padding(
           padding: const EdgeInsets.only(top: 8.0),
-          child: Text(title, style: TextStyle(fontSize: 40)),
+          child: Image.network(image,width: 300,height: 300,fit: BoxFit.cover,),
         );
       },
     );
@@ -76,8 +80,24 @@ class Playlist extends StatelessWidget {
           return ListView.builder(
             itemCount: playlistTitles.length,
             itemBuilder: (context, index) {
+           ValueNotifier<String> title =    pageManager.currentSongTitleNotifier;
+           print([title.value,playlistTitles[index]]);
               return ListTile(
-                title: Text('${playlistTitles[index]}'),
+                onTap: () async {
+                   final _audioHandler = getIt<AudioHandler>();
+                   final songRepository = getIt<PlaylistRepository>();
+                    final song = await songRepository.fetchSelectedSong(title.value);
+                     final mediaItem = MediaItem(
+      id: song['id'] ?? '',
+      album: song['album'] ?? '',
+      title: song['title'] ?? '',
+      extras: {'url': song['url']},
+    );
+    _audioHandler.addQueueItem(mediaItem);
+                   
+                },
+                leading: title.value ==playlistTitles[index] ? Icon(Icons.pause_circle) :  Icon(Icons.play_circle),
+                title: Text('${playlistTitles[index].replaceAll("&quot;", "")}'),
               );
             },
           );
