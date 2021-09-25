@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:music_app/main.dart';
 import 'package:music_app/packages/auidoPlayer/services/playlist_repository.dart';
 import 'package:music_app/packages/auidoPlayer/services/service_locator.dart';
@@ -7,11 +8,10 @@ import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
 import 'notifiers/repeat_button_notifier.dart';
 
-
 class PageManager {
   // Listeners: Updates going to the UI
   final currentSongTitleNotifier = ValueNotifier<String>('');
-   final currentSongMediaIdNotifier = ValueNotifier<String>('');
+  final currentSongMediaIdNotifier = ValueNotifier<String>('');
   final currentSongImageNotifier = ValueNotifier<String>('');
   final playlistNotifier = ValueNotifier<List<String>>([]);
   final progressNotifier = ProgressNotifier();
@@ -37,20 +37,41 @@ class PageManager {
   Future<void> _loadPlaylist() async {
     // final songRepository = getIt<PlaylistRepository>();
     // final playlist = await songRepository.fetchInitialPlaylist();
-    final mediaItems = store.state.weeklyTopModel!.data!
-        .map((song){ 
-int          index =  store.state.weeklyTopModel!.data!.indexOf(song);
-String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
-// print(["indexx", store.state.weeklyTopModel!.data![29],index,song.title,url]);
-         return index ==29 ? MediaItem(id: "asdasdasd",title: "",extras: {'url':"https://aac.saavncdn.com/264/eb5bf3908be1c26cfda000e615c647d6_160.mp4"})  : MediaItem(
-              id: song.id ?? '',
-              album: song.shershaah ?? '',
-              artUri: Uri.parse(song.image.toString()),
-              title: song.title ?? '',
-              extras: {'url':url},
-         );})
-        .toList();
-    _audioHandler.addQueueItems(mediaItems);
+
+    
+      // final mediaItems1 = store.state.weeklyTopModel!.data!.map((song) {
+      //   int index = store.state.weeklyTopModel!.data!.indexOf(song);
+      //   String url = store
+      //       .state
+      //       .playlistSongsUrls![
+      //           index == (store.state.weeklyTopModel!.data!.length - 1)
+      //               ? 0
+      //               : index]
+      //       .toString();
+      //   // print([
+      //   //   "indexx",
+      //   //   store.state.weeklyTopModel!.data!.length,
+      //   //   index,
+      //   //   song.title,
+      //   //   url,
+      //   //   store.state.playlistSongsUrls!.length
+      //   // ]);
+      //   return index == (store.state.weeklyTopModel!.data!.length - 1)
+      //       ? MediaItem(id: "asdasdasd", title: "", extras: {
+      //           'url':
+      //               "https://aac.saavncdn.com/264/eb5bf3908be1c26cfda000e615c647d6_160.mp4"
+      //         })
+      //       : MediaItem(
+      //           id: song.id ?? '',
+      //           album: song.shershaah ?? '',
+      //           artUri: Uri.parse(song.image.toString()),
+      //           title: song.title ?? '',
+      //           extras: {'url': url},
+      //         );
+      // }).toList();
+      
+      // _audioHandler.addQueueItems(mediaItems1);
+   
   }
 
   void _listenToChangesInPlaylist() {
@@ -58,13 +79,13 @@ String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
       if (playlist.isEmpty) {
         playlistNotifier.value = [];
         currentSongTitleNotifier.value = '';
-
       } else {
         final newList = playlist.map((item) => item.title).toList();
         playlistNotifier.value = newList;
       }
       _updateSkipButtons();
     });
+    
   }
 
   void _listenToPlaybackState() {
@@ -122,12 +143,10 @@ String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
     _audioHandler.mediaItem.listen((mediaItem) {
       currentSongTitleNotifier.value = mediaItem?.title.toString() ?? '';
       currentSongImageNotifier.value = mediaItem?.artUri.toString() ?? '';
-     
+
       _updateSkipButtons();
     });
   }
-
-  
 
   void _updateSkipButtons() {
     final mediaItem = _audioHandler.mediaItem.value;
@@ -143,7 +162,6 @@ String url = store.state.playlistSongsUrls![index == 29 ? 0 : index].toString();
 
   void play() => _audioHandler.play();
   void pause() => _audioHandler.pause();
-
   void seek(Duration position) => _audioHandler.seek(position);
 
   void previous() => _audioHandler.skipToPrevious();

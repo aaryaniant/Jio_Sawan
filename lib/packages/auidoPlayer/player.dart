@@ -1,10 +1,14 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 import 'package:music_app/main.dart';
+import 'package:music_app/models/PlaylistSongsUrls.dart';
 import 'package:music_app/packages/auidoPlayer/page_manager.dart';
 import 'package:music_app/packages/auidoPlayer/services/playlist_repository.dart';
 import 'package:music_app/packages/auidoPlayer/services/service_locator.dart';
+import 'package:music_app/store/action.dart';
+import 'package:music_app/store/appState.dart';
 
 import 'notifiers/play_button_notifier.dart';
 import 'notifiers/progress_notifier.dart';
@@ -23,29 +27,53 @@ class _PlayerState extends State<Player> {
   }
 
   @override
-  void dispose() {
-    // getIt<PageManager>().dispose();
+  void dispose() {    
+  
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return  SafeArea(
-      child: Scaffold(
-        // appBar: AppBar(),
+      child:
+      StoreConnector<AppState, AppState>(
+      converter: (store) => store.state,   
+      rebuildOnChange: true,   
+      builder: (context, state) {
+    return 
+       Scaffold(
+        appBar: AppBar(
+          actions:[ IconButton(onPressed: () async {
+      final _audioHandler = getIt<AudioHandler>();
+      List<MediaItem> mediaItems = _audioHandler.queue.value;
+   
+    
+      for(int i=0;  i <= mediaItems.length;i++){
+// await Future.doWhile(() {
+  // print(i);
+_audioHandler.removeQueueItemAt(i);
+List? my = store.state.playlistSongsUrls;
+my!.removeAt(i);
+ store.dispatch(PlaylistSongsUrls(my));   
+ 
+// return i == mediaItems.length;
+// });
+}
+          }, icon: Icon(Icons.delete)),]
+        ),
           body: Container(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                CurrentSongTitle(),
-                Playlist(),
+                    // CurrentSongTitle(),
+                // Playlist(),
                 // AddRemoveSongButtons(),
                 AudioProgressBar(),
                 AudioControlButtons(),
               ],
             ),
           ),
-        ),
+        );})
     );
  
   }
@@ -81,7 +109,7 @@ class Playlist extends StatelessWidget {
             itemCount: playlistTitles.length,
             itemBuilder: (context, index) {
            ValueNotifier<String> title =    pageManager.currentSongTitleNotifier;
-           print([title.value,playlistTitles[index]]);
+        
               return ListTile(
                 onTap: () async {
                    final _audioHandler = getIt<AudioHandler>();
@@ -237,13 +265,20 @@ class PlayButton extends StatelessWidget {
             return IconButton(
               icon: Icon(Icons.play_arrow),
               iconSize: 32.0,
-              onPressed: pageManager.play,
+              onPressed:() async { 
+                final _audioHandler = getIt<AudioHandler>();
+                bool check = await _audioHandler.queue.isEmpty;
+                if(check){
+                   addToQueue();
+                   }
+                pageManager.play();},
             );
           case ButtonState.playing:
             return IconButton(
               icon: Icon(Icons.pause),
               iconSize: 32.0,
-              onPressed: pageManager.pause,
+              onPressed:
+               pageManager.pause,
             );
         }
       },

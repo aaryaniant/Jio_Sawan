@@ -20,8 +20,8 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
       store.dispatch(action.fetchSongId(context,songId));
-    store.dispatch(action.fetchWeeklyTop(context));
-    store.dispatch(action.fetchDailyTop(context));
+    // store.dispatch(action.fetchWeeklyTop(context));
+    // store.dispatch(action.fetchDailyTop(context));
     // store.dispatch(action.fetchPlaylistSongDownloadUrl(context));
     Timer(Duration(seconds: 5), () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePageScreen())));
   }

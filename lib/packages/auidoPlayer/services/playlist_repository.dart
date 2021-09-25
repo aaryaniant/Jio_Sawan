@@ -11,7 +11,7 @@ abstract class PlaylistRepository {
 class DemoPlaylist extends PlaylistRepository {
   @override
   Future<List<Map<String, String>>> fetchInitialPlaylist(
-      {int length = 3}) async {
+    ) async {
     return store.state.weeklyTopModel!.data!.map((e) {
       int index = store.state.weeklyTopModel!.data!.indexOf(e);
       return {
@@ -36,11 +36,11 @@ class DemoPlaylist extends PlaylistRepository {
 
 
   var _songIndex = 0;
-  static const _maxSongNumber = 16;
+  var _maxSongNumber = store.state.weeklyTopModel!.data!.length;
 
   Map<String, String> _nextSong() {
-    _songIndex = (_songIndex ) + 1;
-    // _songIndex = (_songIndex % _maxSongNumber) + 1;
+    // _songIndex = (_songIndex ) + 1;
+    _songIndex = (_songIndex % _maxSongNumber) + 1;
 
     Datum item = store.state.weeklyTopModel!.data![_songIndex];
     return {

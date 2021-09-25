@@ -12,7 +12,7 @@ import 'splashScreen/splashScreen.dart';
 // Redux
 final store = Store<AppState>(appReducer,
     middleware: [thunkMiddleware], initialState: AppState.initial());
-late AudioHandler audioHandler;
+// late AudioHandler audioHandler;
 
 Future<void> main() async {
   await setupServiceLocator();
