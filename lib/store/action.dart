@@ -1,10 +1,8 @@
 import 'dart:convert';
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:music_app/models/PlaylistSongsUrls.dart';
-import 'package:music_app/models/musicDailyModel/daily_top_model.dart';
 import 'package:music_app/models/musicModel/weekly_top_model.dart';
+import 'package:music_app/models/searchModel/search_model.dart';
 import 'package:music_app/models/songInfoModel.dart';
 import 'package:music_app/packages/auidoPlayer/page_manager.dart';
 import 'package:music_app/packages/auidoPlayer/services/service_locator.dart';
@@ -31,6 +29,19 @@ ThunkAction<AppState> fetchSongId(context,songId) {
   };
 }
 
+ThunkAction<AppState> fetchSongSearch(context,songSearch) {
+  print(['fetchSongId api running ']); 
+  return (Store<AppState> store) async {
+    var url = Uri.parse("https://saavn.me/search?song=$songSearch");
+    var response = await http.get(url);    
+    if(response.statusCode==200){
+      var res = jsonDecode(response.body);  
+      print(response.body);
+      store.dispatch(SearchModel.fromJson({"data":res}));  
+    } 
+  };
+}
+
 //fetch Song By id and store to list
 Future<String?> fetchPlaylistSongDownloadUrl(context,songId) async {
   print(['fetchSongByIdStore api running ']);  
@@ -51,7 +62,10 @@ ThunkAction<AppState> fetchWeeklyTop(context,value) {
     var url ;
      if(value == "dailyTop"){
    url =   Uri.parse("https://www.jiosaavn.com/api.php?__call=webapi.get&token=I3kvhipIy73uCJW60TJk1Q__&type=playlist&p=1&n=50&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0");
-     } else{
+     } else if(value == "romanticTop40"){
+   url =   Uri.parse("https://www.jiosaavn.com/api.php?__call=webapi.get&token=m9Qkal5S733ufxkxMEIbIw__&type=playlist&p=1&n=50&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0");       
+     }
+     else{
    url = Uri.parse("https://www.jiosaavn.com/api.php?__call=webapi.get&token=8MT-LQlP35c_&type=playlist&p=1&n=50&includeMetaTags=0&ctx=wap6dot0&api_version=4&_format=json&_marker=0");
   }
     var response = await http.get(url);
@@ -82,7 +96,7 @@ _audioHandler.removeQueueItemAt(i);
 
       // }).toList();
     // _audioHandler.removeQueueItemAt(0);
-   await   Future.delayed(Duration(milliseconds: 3000),(){
+   await   Future.delayed(Duration(milliseconds: 1500),(){
      
   store.dispatch(WeeklyTopModel.fromJson(res));
   store.dispatch(PlaylistSongsUrls(playlistSongsUrls));   
@@ -130,6 +144,7 @@ ThunkAction<AppState> fetchDailyTop(context) {
 }
 
 addToQueue(){
+  print("addToQueue");
     getIt<PageManager>().init();
   final _audioHandler = getIt<AudioHandler>();
                       final mediaItems1 = store.state.weeklyTopModel!.data!.map((song) {

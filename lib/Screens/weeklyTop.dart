@@ -39,7 +39,8 @@ class _WeeklyTopState extends State<WeeklyTop> {
         ),
         elevation: 0,
         backgroundColor: Colors.white,
-        title: Container( child: Text(store.state.weeklyTopModel!.title.toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.black),)),
+        title: //store.state.weeklyTopModel!.title!.isEmpty? Container():
+        Container( child: Text(store.state.weeklyTopModel!.title.toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.black),)),
       ),
       bottomNavigationBar:  Container(
         height: 160,
@@ -120,7 +121,7 @@ class _WeeklyTopState extends State<WeeklyTop> {
                         )
                   :
         Container(      
-          color: Colors.white,
+         
           padding: EdgeInsets.symmetric(horizontal: 0),
           width: MediaQuery.of(context).size.width,        
           child: Column(

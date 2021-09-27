@@ -267,8 +267,9 @@ class PlayButton extends StatelessWidget {
               iconSize: 32.0,
               onPressed:() async { 
                 final _audioHandler = getIt<AudioHandler>();
-                bool check = await _audioHandler.queue.isEmpty;
-                if(check){
+          var m=     await _audioHandler.queue.value;               
+             
+                if(m.isEmpty){
                    addToQueue();
                    }
                 pageManager.play();},

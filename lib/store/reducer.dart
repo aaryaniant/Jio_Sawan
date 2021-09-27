@@ -2,6 +2,7 @@
 import 'package:music_app/models/PlaylistSongsUrls.dart';
 import 'package:music_app/models/musicDailyModel/daily_top_model.dart';
 import 'package:music_app/models/musicModel/weekly_top_model.dart';
+import 'package:music_app/models/searchModel/search_model.dart';
 import 'package:music_app/models/songInfoModel.dart';
 import 'action.dart';
 import 'appState.dart';
@@ -16,6 +17,7 @@ AppState appReducer(AppState state, action) {
     songInfoModel: songInfoReducer(state.songInfoModel as SongInfoModel, action),
     weeklyTopModel: weeklyTopModelReducer(state.weeklyTopModel as WeeklyTopModel, action),
     dailyTopModel: dailyTopModelReducer(state.dailyTopModel as DailyTopModel, action),
+    searchModel: searchModelReducer(state.searchModel as SearchModel, action),
     playlistSongsUrls:playlistSongsUrlsReducer(state.playlistSongsUrls as List,action)
   );
 }
@@ -23,8 +25,7 @@ AppState appReducer(AppState state, action) {
 
 
 playlistSongsUrlsReducer(prevState, dynamic action) {
-  if (action is PlaylistSongsUrls) {
- 
+  if (action is PlaylistSongsUrls) { 
     return action.playlistSongsUrls;
   }
   return prevState;
@@ -49,6 +50,13 @@ weeklyTopModelReducer(WeeklyTopModel prevState, dynamic action) {
 
 dailyTopModelReducer(DailyTopModel prevState, dynamic action) {
   if (action is DailyTopModel) {    
+    return action;
+  }
+  return prevState;
+}
+
+searchModelReducer(SearchModel prevState, dynamic action) {
+  if (action is SearchModel) {    
     return action;
   }
   return prevState;

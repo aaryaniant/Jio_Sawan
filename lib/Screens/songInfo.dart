@@ -1,15 +1,9 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_vlc_player/flutter_vlc_player.dart';
-import 'package:just_audio/just_audio.dart';
-// import 'package:music_app/Screens/rt.dart';
 import 'package:music_app/main.dart';
 import 'package:music_app/models/musicDailyModel/datum.dart';
 import 'package:music_app/store/appState.dart';
-import 'package:rxdart/rxdart.dart';
 import '/store/action.dart' as action;
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:html_unescape/html_unescape.dart';
 // import 'audioHandler.dart';
